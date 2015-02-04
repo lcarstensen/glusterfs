@@ -260,7 +260,7 @@ rpc_transport_load (glusterfs_ctx_t *ctx, dict_t *options, char *trans_name)
                 ret = gf_asprintf(&transportdir, "%s/rpc-transport",getenv("GLUSTERFS_DIR"));
                 if (-1 == ret) {
                         gf_log ("rpc-transport", GF_LOG_ERROR, "asprintf of getenv failed, ignoring");
-                        transportdir = XLATORDIR;
+                        transportdir = RPC_TRANSPORTDIR;
                 }
                 ret = -1;
         }
