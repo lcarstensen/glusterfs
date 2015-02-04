@@ -127,10 +127,15 @@ xlator_volopt_dynload (char *xlator_type, void **dl_handle,
 
         GF_VALIDATE_OR_GOTO ("xlator", xlator_type, out);
 
-//        xlatordir = secure_getenv("XLATORDIR");
-        xlatordir = getenv("XLATORDIR");
-        if (xlatordir == NULL ) {
+        if(getenv("GLUSTERFS_DIR")==NULL) {
                 xlatordir = XLATORDIR;
+        } else {
+                ret = gf_asprintf(&xlatordir, "%s/xlator",getenv("GLUSTERFS_DIR"));
+                if (-1 == ret) {
+                        gf_log ("xlator", GF_LOG_ERROR, "asprintf of getenv failed, ignoring");
+                        xlatordir = XLATORDIR;
+                }
+                ret = -1;
         }
 
         ret = gf_asprintf (&name, "%s/%s.so", xlatordir, xlator_type);
@@ -185,10 +190,15 @@ xlator_dynload (xlator_t *xl)
 
         INIT_LIST_HEAD (&xl->volume_options);
 
-//        xlatordir = secure_getenv("XLATORDIR");
-        xlatordir = getenv("XLATORDIR");
-        if (xlatordir == NULL ) {
+        if(getenv("GLUSTERFS_DIR")==NULL) {
                 xlatordir = XLATORDIR;
+        } else {
+                ret = gf_asprintf(&xlatordir, "%s/xlator",getenv("GLUSTERFS_DIR"));
+                if (-1 == ret) {
+                        gf_log ("xlator", GF_LOG_ERROR, "asprintf of getenv failed, ignoring");
+                        xlatordir = XLATORDIR;
+                }
+                ret = -1;
         }
 
         ret = gf_asprintf (&name, "%s/%s.so", xlatordir, xl->type);

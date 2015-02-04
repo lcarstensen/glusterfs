@@ -159,6 +159,7 @@ rpc_transport_load (glusterfs_ctx_t *ctx, dict_t *options, char *trans_name)
 	volume_opt_list_t *vol_opt = NULL;
         gf_boolean_t bind_insecure = _gf_false;
         xlator_t   *this = NULL;
+        char *transportdir = NULL;
 
 	GF_VALIDATE_OR_GOTO("rpc-transport", options, fail);
 	GF_VALIDATE_OR_GOTO("rpc-transport", ctx, fail);
@@ -253,7 +254,19 @@ rpc_transport_load (glusterfs_ctx_t *ctx, dict_t *options, char *trans_name)
 		goto fail;
 	}
 
-	ret = gf_asprintf (&name, "%s/%s.so", RPC_TRANSPORTDIR, type);
+        if(getenv("GLUSTERFS_DIR")==NULL) {
+                transportdir = RPC_TRANSPORTDIR;
+        } else {
+                ret = gf_asprintf(&transportdir, "%s/rpc-transport",getenv("GLUSTERFS_DIR"));
+                if (-1 == ret) {
+                        gf_log ("rpc-transport", GF_LOG_ERROR, "asprintf of getenv failed, ignoring");
+                        transportdir = XLATORDIR;
+                }
+                ret = -1;
+        }
+
+
+	ret = gf_asprintf (&name, "%s/%s.so", transportdir, type);
         if (-1 == ret) {
                 goto fail;
         }
