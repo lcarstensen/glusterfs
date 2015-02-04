@@ -18,6 +18,7 @@
 #include <netdb.h>
 #include <fnmatch.h>
 #include "defaults.h"
+#include <stdlib.h>
 
 #define SET_DEFAULT_FOP(fn) do {			\
                 if (!xl->fops->fn)			\
@@ -122,10 +123,17 @@ xlator_volopt_dynload (char *xlator_type, void **dl_handle,
         int                     ret = -1;
         char                    *name = NULL;
         void                    *handle = NULL;
+        char                    *xlatordir = NULL;
 
         GF_VALIDATE_OR_GOTO ("xlator", xlator_type, out);
 
-        ret = gf_asprintf (&name, "%s/%s.so", XLATORDIR, xlator_type);
+//        xlatordir = secure_getenv("XLATORDIR");
+        xlatordir = getenv("XLATORDIR");
+        if (xlatordir == NULL ) {
+                xlatordir = XLATORDIR;
+        }
+
+        ret = gf_asprintf (&name, "%s/%s.so", xlatordir, xlator_type);
         if (-1 == ret) {
                 gf_log ("xlator", GF_LOG_ERROR, "asprintf failed");
                 goto out;
@@ -171,12 +179,19 @@ xlator_dynload (xlator_t *xl)
         void              *handle = NULL;
         volume_opt_list_t *vol_opt = NULL;
         class_methods_t   *vtbl = NULL;
+        char                    *xlatordir = NULL;
 
         GF_VALIDATE_OR_GOTO ("xlator", xl, out);
 
         INIT_LIST_HEAD (&xl->volume_options);
 
-        ret = gf_asprintf (&name, "%s/%s.so", XLATORDIR, xl->type);
+//        xlatordir = secure_getenv("XLATORDIR");
+        xlatordir = getenv("XLATORDIR");
+        if (xlatordir == NULL ) {
+                xlatordir = XLATORDIR;
+        }
+
+        ret = gf_asprintf (&name, "%s/%s.so", xlatordir, xl->type);
         if (-1 == ret) {
                 gf_log ("xlator", GF_LOG_ERROR, "asprintf failed");
                 goto out;
